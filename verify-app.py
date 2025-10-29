@@ -2,12 +2,13 @@
 
 import csv
 import io
+import os
 import re
 import time
 import uuid
 import dns.resolver
 import smtplib
-from flask import Flask, request, jsonify, send_file, Response
+from flask import Flask, request, jsonify, send_file, Response, send_from_directory
 from flask_cors import CORS
 from tempfile import NamedTemporaryFile
 
@@ -81,6 +82,10 @@ def check_email(email):
         return "invalid", "smtp_reject"
     else:
         return "invalid", f"smtp_{code}"
+
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
 @app.route('/verify', methods=['POST'])
 def verify():
@@ -190,4 +195,6 @@ def download():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5050)
+    port = int(os.environ.get('PORT', 5050))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    app.run(host='0.0.0.0', port=port, debug=debug)

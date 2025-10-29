@@ -92,7 +92,7 @@
       const formData = new FormData();
       formData.append('file', file);
 
-      fetch('http://localhost:5050/verify', {
+      fetch('/verify', {
         method: 'POST',
         body: formData
       })
@@ -133,27 +133,27 @@
 
       cancelBtn.onclick = () => {
         canceled = true;
-        fetch(`http://localhost:5050/cancel?job_id=${job_id}`, { method: 'POST' });
+        fetch(`/cancel?job_id=${job_id}`, { method: 'POST' });
         status.innerText = `❌ Canceled job ${job_id}`;
         actions.innerHTML = '';
       };
 
       closeBtn.onclick = () => {
-        fetch(`http://localhost:5050/cancel?job_id=${job_id}`, { method: 'POST' });
+        fetch(`/cancel?job_id=${job_id}`, { method: 'POST' });
         removeJob();
       };
 
       const poll = setInterval(() => {
         if (canceled) return clearInterval(poll);
 
-        fetch(`http://localhost:5050/progress?job_id=${job_id}`)
+        fetch(`/progress?job_id=${job_id}`)
           .then(res => res.json())
           .then(data => {
             bar.style.width = `${data.percent}%`;
             status.innerText = `${data.percent}% done – Row ${data.row} of ${data.total}`;
           });
 
-        fetch(`http://localhost:5050/log?job_id=${job_id}`)
+        fetch(`/log?job_id=${job_id}`)
           .then(res => res.text())
           .then(text => {
             logLine.innerText = text.replace(/^\[\d+%\] \(\d+\/\d+\) /, '');
@@ -162,7 +162,7 @@
 
       const wait = setInterval(() => {
         if (canceled) return clearInterval(wait);
-        fetch(`http://localhost:5050/progress?job_id=${job_id}`)
+        fetch(`/progress?job_id=${job_id}`)
           .then(res => res.json())
           .then(data => {
             if (data.percent >= 100) {
@@ -171,12 +171,12 @@
                 <div style="margin-top: 10px;">
                   <strong>⬇️ Download CSV:</strong><br>
                  <div>
-      <a href="http://localhost:5050/download?job_id=${job_id}&type=all" target="_blank">All Leads</a> |
-      <a href="http://localhost:5050/download?job_id=${job_id}&type=valid" target="_blank">Valid Only</a>
+      <a href="/download?job_id=${job_id}&type=all" target="_blank">All Leads</a> |
+      <a href="/download?job_id=${job_id}&type=valid" target="_blank">Valid Only</a>
     </div>
     <div>
-      <a href="http://localhost:5050/download?job_id=${job_id}&type=risky" target="_blank">Risky Only</a> |
-      <a href="http://localhost:5050/download?job_id=${job_id}&type=risky_invalid" target="_blank">Risky & Invalid</a>
+      <a href="/download?job_id=${job_id}&type=risky" target="_blank">Risky Only</a> |
+      <a href="/download?job_id=${job_id}&type=risky_invalid" target="_blank">Risky & Invalid</a>
     </div>
                   </div>
               `;
